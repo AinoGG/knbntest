@@ -15,6 +15,11 @@ import Kanban from '../components/Kanban.vue';
 const store = useAuthStore()
 console.log(store.auth)
 
+onMounted(() => {
+    if(process.browser && !!localStorage.getItem('token')) {
+        store.auth = true
+    }
+})
 console.log()
 </script>
 <style lang="scss">

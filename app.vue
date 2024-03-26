@@ -5,10 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useWebsiteStore } from './store';
-const website = useWebsiteStore()
-console.log(website.$state.name)
-console.log(website.fetch())
+
 </script>
 
 <style lang="scss">
@@ -25,6 +22,11 @@ li {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+p, h1, h2, h3, h4{
+  margin: 0;
+  padding: 0;
 }
 
 a {
@@ -88,6 +90,7 @@ button {
   background: #424141;
   width: 100%;
   height: 100vh;
+  overflow-y: scroll;
 }
 
 .page {

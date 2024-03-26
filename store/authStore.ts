@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
                     email: useremail,
                     password: password
                 }
-            }).then(res => console.log(res))
+            }).then((res:any) => this.userForm = res.username)
                 .catch(Error => {
                     alert(Error)
                 })
@@ -58,7 +58,7 @@ export const useAuthStore = defineStore('auth', {
                 this.auth = true
                 if (process.browser) {
                     localStorage.setItem('token', res.access)
-                    console.log( this.auth)
+                    console.log(this.auth)
                 }
             })
                 .catch(Error => {
