@@ -18,7 +18,7 @@ interface Auth {
 export const useAuthStore = defineStore('auth', {
     state: (): Auth => {
         return {
-            auth: process.browser && !!localStorage.getItem('token') ? true : false,
+            auth: false,
             userForm: '',
             passForm: '',
             emailForm: '',
@@ -55,8 +55,10 @@ export const useAuthStore = defineStore('auth', {
                 }
             }).then((res: any) => {
                 this.isAuth = res.access
+                this.auth = true
                 if (process.browser) {
                     localStorage.setItem('token', res.access)
+                    console.log( this.auth)
                 }
             })
                 .catch(Error => {

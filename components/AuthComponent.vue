@@ -12,10 +12,14 @@
 </template>
 <script lang="ts" setup>
 import { useAuthStore } from '../store/authStore'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const store = useAuthStore()
 function clickSubmit() {
     store.login(store.userForm, store.passForm)
+    setTimeout(() => {
+        router.push('/')
+    }, 1000)
 }
 </script>
 
