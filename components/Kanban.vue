@@ -1,21 +1,13 @@
 <template>
     <div class="wrapper-board">
-        <ColumnItem :header="item.header" :color="item.color" v-for="(item, i) in headers" :key="i" />
+        <ColumnItem :header="item.header" :color="item.color" :listItems="item.cardList" :stateIndex="item.column" v-for="(item, i) in store.board" :key="i" />
     </div>
 </template>
-<script>
-export default {
-    data() {
-        return {
-            headers: [
-                { header: 'ON HOLD', color: '#ea824b' },
-                { header: 'IN PROGRESS', color: '#4390bb' },
-                { header: 'NEEDS REVIEW', color: '#f1cb58' },
-                { header: 'APPROWED', color: '#52b268' },
-            ]
-        }
-    }
-}
+<script setup lang="ts">
+import { useBoardStore } from '~/store/boardStore';
+const store = useBoardStore()
+
+console.log(store)
 </script>
 <style lang="scss">
 .wrapper-board {

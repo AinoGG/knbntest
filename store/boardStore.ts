@@ -1,10 +1,22 @@
 import { defineStore } from 'pinia'
 
-interface Board {
-    board: Object[],
-    textArea: string
+interface BoardArray<T> {
+    board: T[],
+    textArea: string,
 }
 
+interface CardList {
+    id: string,
+    text: string
+}
+
+interface Board<T> {
+    
+    column: number,
+    header: string,
+    color: string,
+    cardList: T[]
+}
 
 
 // email: "ryadomgg@gmail.com"
@@ -12,11 +24,13 @@ interface Board {
 // username: "testUser"
 
 export const useBoardStore = defineStore('board', {
-    state: (): Board => {
+    state: (): BoardArray<Board<CardList>> => {
         return {
             board: [
                 {
                     column: 0,
+                    header: 'HOLD ON',
+                    color: '#ea824b',
                     cardList: [
                         {
                             id: '1',
@@ -29,7 +43,9 @@ export const useBoardStore = defineStore('board', {
                     ]
                 },
                 {
-                    column: 0,
+                    column: 1,
+                    header: 'IN PROGRESS',
+                    color: '#4390bb',
                     cardList: [
                         {
                             id: '1',
@@ -42,7 +58,9 @@ export const useBoardStore = defineStore('board', {
                     ]
                 },
                 {
-                    column: 0,
+                    column: 2,
+                    header: 'NEEDS REVIEW',
+                    color: '#f1cb58',
                     cardList: [
                         {
                             id: '1',
@@ -55,7 +73,9 @@ export const useBoardStore = defineStore('board', {
                     ]
                 },
                 {
-                    column: 0,
+                    column: 3,
+                    header: 'APPROWED',
+                    color: '#52b268',
                     cardList: [
                         {
                             id: '1',
@@ -72,22 +92,8 @@ export const useBoardStore = defineStore('board', {
         }
     },
     actions: {
-        // async registration(username: string, useremail: string, password: string) {
-        //     await $fetch(`${this.baseUrl}users/create/`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-type': 'application/json'
-        //         },
-        //         body: {
-        //             username: username,
-        //             email: useremail,
-        //             password: password
-        //         }
-        //     }).then((res: any) => this.userForm = res.username)
-        //         .catch(Error => {
-        //             alert(Error)
-        //         })
-        // },
-
+        addCard(state:any, payload:any) {
+            state.cardList.push(payload)
+        },
     }
 })
