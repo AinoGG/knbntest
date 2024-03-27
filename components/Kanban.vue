@@ -6,8 +6,7 @@
 <script setup lang="ts">
 import { useBoardStore } from '~/store/boardStore';
 const store = useBoardStore()
-
-console.log(store)
+store.getCards()
 </script>
 <style lang="scss">
 .wrapper-board {

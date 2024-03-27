@@ -18,7 +18,7 @@ interface Auth {
 export const useAuthStore = defineStore('auth', {
     state: (): Auth => {
         return {
-            auth: false,
+            auth: true,
             userForm: '',
             passForm: '',
             emailForm: '',
@@ -58,12 +58,30 @@ export const useAuthStore = defineStore('auth', {
                 this.auth = true
                 if (process.browser) {
                     localStorage.setItem('token', res.access)
+                    localStorage.setItem('refresh', res.refresh)
                     console.log(this.auth)
                 }
             })
                 .catch(Error => {
                     alert(Error)
                 })
+        },
+        async refreshToken(token: any) {
+            await $fetch(`${this.baseUrl}users/token/refresh/`, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: {
+                   "refresh": token
+                }
+            }).then((res:any) => {
+                this.isAuth = res.access
+                this.auth = true
+                if (process.browser) {
+                    localStorage.setItem('token', res.access)
+                }
+            })               
         },
     }
 })

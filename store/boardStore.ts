@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 interface BoardArray<T> {
+    baseUrl: string,
     board: T[],
     textArea: string,
 }
@@ -11,7 +12,7 @@ interface CardList {
 }
 
 interface Board<T> {
-    
+
     column: number,
     header: string,
     color: string,
@@ -26,20 +27,15 @@ interface Board<T> {
 export const useBoardStore = defineStore('board', {
     state: (): BoardArray<Board<CardList>> => {
         return {
+            baseUrl: 'https://trello.backend.tests.nekidaem.ru/api/v1/',
             board: [
                 {
                     column: 0,
                     header: 'HOLD ON',
                     color: '#ea824b',
                     cardList: [
-                        {
-                            id: '1',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit.'
-                        },
-                        {
-                            id: '2',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit. asdqweq QQ dasd'
-                        },
+                        
+
                     ]
                 },
                 {
@@ -47,14 +43,8 @@ export const useBoardStore = defineStore('board', {
                     header: 'IN PROGRESS',
                     color: '#4390bb',
                     cardList: [
-                        {
-                            id: '1',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit.'
-                        },
-                        {
-                            id: '2',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit. asdqweq QQ dasd'
-                        },
+                        
+
                     ]
                 },
                 {
@@ -62,14 +52,8 @@ export const useBoardStore = defineStore('board', {
                     header: 'NEEDS REVIEW',
                     color: '#f1cb58',
                     cardList: [
-                        {
-                            id: '1',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit.'
-                        },
-                        {
-                            id: '2',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit. asdqweq QQ dasd'
-                        },
+                        
+
                     ]
                 },
                 {
@@ -77,14 +61,8 @@ export const useBoardStore = defineStore('board', {
                     header: 'APPROWED',
                     color: '#52b268',
                     cardList: [
-                        {
-                            id: '1',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit.'
-                        },
-                        {
-                            id: '2',
-                            text: '*Lorem ipsum dolor sit, amet consectetur adipisicing elit. asdqweq QQ dasd'
-                        },
+                        
+
                     ]
                 },
             ],
@@ -92,8 +70,48 @@ export const useBoardStore = defineStore('board', {
         }
     },
     actions: {
-        addCard(state:any, payload:any) {
+        addCard(state: any, payload: any) {
             state.cardList.push(payload)
         },
+        async getCards() {
+            await $fetch(`${this.baseUrl}cards/`, {
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                },
+
+            }).then((res: any) => {                
+                res.forEach((resItem: any) => {
+                    this.board[resItem.row].cardList.push({ id: resItem.id, text: resItem.text })                    
+                })
+
+
+            })
+        },
+        async createCard(row: number, text: string) {
+            await $fetch(`${this.baseUrl}cards/`, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                },
+                body: {
+                    "row": row,
+                    "text": text
+                }
+            }).then((res:any) => {
+                this.board[row].cardList.push({ id: res.id, text: res.text })
+            })
+        },
+        async deleteCard(id:string) {
+            await $fetch(`${this.baseUrl}cards/${id}/`, {
+                method: "DELETE",
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                },                
+            }).then((res:any) => console.log(res))
+        }
     }
 })

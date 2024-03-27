@@ -1,11 +1,49 @@
 <template>
   <div class="main">
-    <NuxtPage />
+    <NuxtPage :loading="state.loading"/>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useAuthStore } from './store/authStore'
+const store = useAuthStore()
+console.log(store.isAuth)
 
+
+
+const state = reactive({
+  expToken: 0,
+  isExpire: false,
+  loading: true
+})
+
+function tokenExpired(token: any) {
+  state.expToken = JSON.parse(atob(token.split('.')[1])).exp
+  if (Date.now() >= state.expToken * 1000) {
+    state.isExpire = false
+  } else {
+    state.isExpire = true
+  }
+  console.log(state.isExpire)
+}
+
+if (process.browser && localStorage.getItem('token')) {
+  tokenExpired(localStorage.getItem('token'))
+}
+
+onMounted(() => {
+
+  if (process.browser && !state.isExpire && !!localStorage.getItem('refresh')) {
+    store.refreshToken(localStorage.getItem('refresh'))
+  } 
+  if (process.browser && !localStorage.getItem('refresh') && !localStorage.getItem('token')) {
+    store.auth = false
+  } 
+
+  state.loading = false
+
+
+})
 </script>
 
 <style lang="scss">
@@ -24,7 +62,11 @@ li {
   margin: 0;
 }
 
-p, h1, h2, h3, h4{
+p,
+h1,
+h2,
+h3,
+h4 {
   margin: 0;
   padding: 0;
 }
