@@ -2,8 +2,9 @@
     <div class="column-board">
         <h2 class="column-board__header" :style="{ background: color }">{{ header }} ({{ listItems.length }}) </h2>
         <div class="column-board-box">
-            <ul class="column-board__list">
-                <li draggable="true" class="column-board__list-item" v-for="(item, i) in props.listItems" :key="i">
+            <ul @dragover.prevent @dragenter.prevent class="column-board__list" @drop="dropEvent($event, stateIndex)">
+                <li draggable="true" @dragstart="dragEvent($event, item, stateIndex)" class="column-board__list-item"
+                    v-for="(item, i) in props.listItems" :key="i">
                     <p class="list-item__id">
                         <b>ID:</b> {{ item.id }}
                     </p>
@@ -31,14 +32,16 @@
 
 <script setup lang="ts">
 import { useBoardStore } from '../store/boardStore'
+import { useAuthStore } from '../store/authStore'
 
 const store = useBoardStore()
+const authStore = useAuthStore()
 
 interface StateColumn {
     textareaVisible: boolean,
     textareaValue: string,
     counter: number,
-    id: string | any
+    id: string | any,
 }
 
 interface ListItem {
@@ -47,6 +50,7 @@ interface ListItem {
 }
 
 interface DefaultProps<T> {
+    ws: any,
     header: string,
     color: string,
     listItems: T[],
@@ -61,12 +65,44 @@ const state = reactive<StateColumn>({
     textareaVisible: false,
     textareaValue: '',
     counter: 0,
-    id: props.header.toLowerCase().split(" ").join('_') + '#' + Date.now()
+    id: props.header.toLowerCase().split(" ").join('_') + '#' + Date.now(),
 })
 
 function textareaOn() {
     state.textareaVisible = !state.textareaVisible
     state.textareaValue = ''
+}
+
+
+function dropEvent(e: DragEvent, row: any) {
+    let date = Math.floor(-(Date.now()))
+
+    if (Date.now() < store.expToken * 1000) {
+        store.updateCard(store.dragObject.id, row, store.dragObject.text)
+        store.getCards()
+        store.webSocketFunc(store.dragObject.id, store.dragObject.row, date, row, date + 1, props.ws)
+    }
+
+    if (Date.now() >= store.expToken * 1000) {
+        authStore.refreshToken(localStorage.getItem('refresh'))
+        store.updateCard(store.dragObject.id, row, store.dragObject.text)
+        store.getCards()
+        store.webSocketFunc(store.dragObject.id, store.dragObject.row, date, row, date + 1, props.ws)
+    }
+
+}
+
+function dragEvent(e: DragEvent, item: any, row: any) {
+    e.dataTransfer!.dropEffect = 'move'
+    e.dataTransfer!.effectAllowed = 'move'
+    store.dragObject.id = item.id
+    store.dragObject.text = item.text
+    store.dragObject.row = row
+
+
+    if (Date.now() >= store.expToken * 1000) {
+        authStore.refreshToken(localStorage.getItem('refresh'))
+    }
 
 
 }
@@ -76,6 +112,7 @@ function addCard() {
     store.createCard(props.stateIndex, state.textareaValue)
     textareaOn()
     generateID()
+
 }
 
 function generateID() {
@@ -122,6 +159,7 @@ function deleteListItem(item: any, array: any) {
     &__list {
         display: grid;
         gap: 16px;
+        min-height: 100px;
 
         &-item {
             background: #1f1f21;

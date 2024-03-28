@@ -1,4 +1,7 @@
 <template>
+    <div class="header" v-if="store.auth">
+        <button @click="logout">LOGOUT</button>
+    </div>
     <div class="login-buttons page" v-if="!store.auth && !props.loading">
         <button class="login-button__reg">
             <NuxtLink to="/registration">Регистрация</NuxtLink>
@@ -34,15 +37,31 @@ const props = defineProps([
     'loading'
 ])
 
-console.log(props.loading)
+function logout() {
+    store.auth = false
+    if(process.browser) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('refresh')
+    }
+}
 
-// onMounted(() => {
-//     if(process.browser && !!localStorage.getItem('token')) {
-//         store.auth = true
-//     }
-// })
+
+
 </script>
 <style lang="scss">
+.header{
+    width: 100%;
+    border-bottom: 1px solid #fff;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px 20px;
+    height: 60px;
+    button {
+        height: 36px;
+        width: 100px;
+    }
+}
 .loading {
     display: flex;
     align-items: center;

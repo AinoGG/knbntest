@@ -6,7 +6,9 @@
 
 <script lang="ts" setup>
 import { useAuthStore } from './store/authStore'
+import { useBoardStore } from './store/boardStore';
 const store = useAuthStore()
+const boardStore = useBoardStore()
 console.log(store.isAuth)
 
 
@@ -18,8 +20,8 @@ const state = reactive({
 })
 
 function tokenExpired(token: any) {
-  state.expToken = JSON.parse(atob(token.split('.')[1])).exp
-  if (Date.now() >= state.expToken * 1000) {
+  boardStore.expToken = JSON.parse(atob(token.split('.')[1])).exp
+  if (Date.now() >= boardStore.expToken * 1000) {
     state.isExpire = false
   } else {
     state.isExpire = true
@@ -32,7 +34,7 @@ if (process.browser && localStorage.getItem('token')) {
 }
 
 onMounted(() => {
-
+  boardStore.onIsShuffle()
   if (process.browser && !state.isExpire && !!localStorage.getItem('refresh')) {
     store.refreshToken(localStorage.getItem('refresh'))
   } 
