@@ -3,17 +3,27 @@
         <h2 class="column-board__header" :style="{ background: color }">{{ header }} ({{ listItems.length }}) </h2>
         <div class="column-board-box">
             <ul @dragover.prevent @dragenter.prevent class="column-board__list" @drop="dropEvent($event, stateIndex)">
-                <li draggable="true" @dragstart="dragEvent($event, item, stateIndex)" class="column-board__list-item"
-                    v-for="(item, i) in props.listItems" :key="i">
-                    <p class="list-item__id">
-                        <b>ID:</b> {{ item.id }}
-                    </p>
-                    <p class="list-item__text">
-                        {{ item.text }}
-                    </p>
-                    <button type="button" @click="deleteListItem(item, store.board[props.stateIndex].cardList)"
-                        class="list-item__button">X</button>
+                <li @dragenter="() => state.check = item.id" @dragleave="() => state.check = false" draggable="true"
+                    @dragstart="dragEvent($event, item, stateIndex)" class="column-board__list-item"
+                    v-for="item in props.listItems" :key="item.id">
+                    <div class="column-board__list-box">
+                        <p class="list-item__id">
+                            <b>ID:</b> {{ item.id }}
+                        </p>
+                        <p class="list-item__text">
+                            {{ item.text }}
+                        </p>
+                        <button type="button" @click="deleteListItem(item, store.board[props.stateIndex].cardList)"
+                            class="list-item__button">X</button>
+                    </div>
+                    <div class="slot opacity" v-if="state.check === item.id">
+
+                    </div>
                 </li>
+                <li class="slot opacity" v-if="props.listItems.length === 0 && !state.textareaVisible">
+
+                </li>
+
             </ul>
             <div class="column-board-text" v-if="state.textareaVisible">
                 <textarea name="card-text" :id="color" cols="30" rows="10" v-model="state.textareaValue"
@@ -42,11 +52,13 @@ interface StateColumn {
     textareaValue: string,
     counter: number,
     id: string | any,
+    check: any
 }
 
 interface ListItem {
     id: string,
     text: string,
+    sec_num: number
 }
 
 interface DefaultProps<T> {
@@ -66,6 +78,7 @@ const state = reactive<StateColumn>({
     textareaValue: '',
     counter: 0,
     id: props.header.toLowerCase().split(" ").join('_') + '#' + Date.now(),
+    check: false
 })
 
 function textareaOn() {
@@ -76,7 +89,7 @@ function textareaOn() {
 
 function dropEvent(e: DragEvent, row: any) {
     let date = Math.floor(-(Date.now()))
-
+    state.check = false
     if (Date.now() < store.expToken * 1000) {
         store.updateCard(store.dragObject.id, row, store.dragObject.text)
         store.getCards()
@@ -98,13 +111,23 @@ function dragEvent(e: DragEvent, item: any, row: any) {
     store.dragObject.id = item.id
     store.dragObject.text = item.text
     store.dragObject.row = row
-
+    e.dataTransfer!.setData('itemId', item.id.toString())
 
     if (Date.now() >= store.expToken * 1000) {
         authStore.refreshToken(localStorage.getItem('refresh'))
     }
 
 
+}
+
+function checkSLot() {
+    // console.log(store.dragObject.dragStart)
+    // if(store.dragObject.dragStart){
+    //     state.check = true
+    //     // console.log(state.check)
+    // } else {
+    //     state.check = false
+    // }
 }
 
 function addCard() {
@@ -154,36 +177,65 @@ function deleteListItem(item: any, array: any) {
         font-weight: 400;
         padding: 5px;
         width: 100%;
+
+        @media(max-width:1073px) {
+            font-size: 20px;
+        }
+
+        @media(max-width:917px) {
+            font-size: 18px;
+        }
     }
 
     &__list {
         display: grid;
         gap: 16px;
-        min-height: 100px;
+
+
+        .slot {
+            min-height: 100px;
+            background: #929194;
+            pointer-events: none;
+
+            &.opacity {
+                opacity: .1;
+            }
+        }
 
         &-item {
-            background: #1f1f21;
-            color: #929194;
-            padding: 16px 8px;
-            font-size: 14px;
-            position: relative;
+            gap: 8px;
+            display: flex;
+            flex-direction: column;
 
-            .list-item__id {
-                b {
-                    color: #e8edee;
+            .column-board__list-box {
+                pointer-events: none;
+                background: #1f1f21;
+                color: #929194;
+                padding: 16px 8px;
+
+                .list-item__id {
+                    b {
+                        color: #e8edee;
+                    }
+                }
+
+                .list-item__text {
+                    margin-top: 8px;
+                }
+
+                button.list-item__button {
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    margin-top: 0;
+                    pointer-events: all;
                 }
             }
 
-            .list-item__text {
-                margin-top: 8px;
-            }
+            font-size: 14px;
+            position: relative;
 
-            button.list-item__button {
-                position: absolute;
-                top: 8px;
-                right: 8px;
-                margin-top: 0;
-            }
+
         }
     }
 

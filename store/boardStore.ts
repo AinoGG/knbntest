@@ -6,7 +6,7 @@ interface BoardArray<T> {
     expToken: number,
     board: T[],
     textArea: string,
-    dragObject: any
+    dragObject: any,
 }
 
 interface CardList {
@@ -76,7 +76,8 @@ export const useBoardStore = defineStore('board', {
             dragObject: {
                 id: '',
                 text: '',
-                row: ''
+                row: '',
+                dragStart: false
             }
         }
     },

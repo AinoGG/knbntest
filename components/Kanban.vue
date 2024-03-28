@@ -22,7 +22,7 @@ const state = reactive<State>({
 
 storeAuth.refreshToken(localStorage.getItem('refresh'))
 
-state.connection = new WebSocket(`wss://trello.backend.tests.nekidaem.ru/events/?token=${localStorage.getItem('token')}`)
+// state.connection = new WebSocket(`wss://trello.backend.tests.nekidaem.ru/events/?token=${localStorage.getItem('token')}`)
 
 // function sendMEssage(message:any) {
 //     state.connection.send(message)
@@ -31,12 +31,12 @@ state.connection = new WebSocket(`wss://trello.backend.tests.nekidaem.ru/events/
 // console.log(state.connection)
 
 onMounted(() => {
-    setTimeout(() => {
-        state.connection.onopen = (event: any) => {
-            console.log(event);
-            console.log('success connected WS');
-        }
-    }, 2000)
+    // setTimeout(() => {
+    //     state.connection.onopen = (event: any) => {
+    //         console.log(event);
+    //         console.log('success connected WS');
+    //     }
+    // }, 2000)
 })
 </script>
 <style lang="scss">
@@ -45,5 +45,8 @@ onMounted(() => {
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     padding: 15px;
+    @media(max-width:768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <NuxtPage :loading="state.loading"/>
+    <NuxtPage :loading="state.loading" />
   </div>
 </template>
 
@@ -37,10 +37,10 @@ onMounted(() => {
   boardStore.onIsShuffle()
   if (process.browser && !state.isExpire && !!localStorage.getItem('refresh')) {
     store.refreshToken(localStorage.getItem('refresh'))
-  } 
+  }
   if (process.browser && !localStorage.getItem('refresh') && !localStorage.getItem('token')) {
     store.auth = false
-  } 
+  }
 
   state.loading = false
 
@@ -55,6 +55,12 @@ body {
   font-size: 16px;
   color: antiquewhite;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  word-break: break-word;
+
+  @media(max-width:768px) {
+    grid-template-columns: repeat(2, 1fr);
+    font-size: 14px;
+  }
 }
 
 ul,
