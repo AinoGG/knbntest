@@ -11,15 +11,6 @@ interface Auth {
 
 
 
-// email: "ryadomgg@gmail.com"
-// password: "n3wT3stp4SS"
-// username: "testUser"
-
-
-
-// email: "test@mail.ru"
-// password: "t3stm4ilR4"
-// username: "newTest"
 
 export const useAuthStore = defineStore('auth', {
     state: (): Auth => {
