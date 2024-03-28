@@ -84,6 +84,9 @@ const state = reactive<StateColumn>({
 function textareaOn() {
     state.textareaVisible = !state.textareaVisible
     state.textareaValue = ''
+    if (Date.now() >= store.expToken * 1000) {
+        authStore.refreshToken(localStorage.getItem('refresh'))
+    }
 }
 
 

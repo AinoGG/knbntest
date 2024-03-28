@@ -44,7 +44,10 @@ export const useAuthStore = defineStore('auth', {
                     email: useremail,
                     password: password
                 }
-            }).then((res:any) => this.userForm = res.username)
+            }).then((res:any) => {
+                this.userForm = res.username
+                alert('registration is successful')
+            })
                 .catch(Error => {
                     alert(Error)
                 })

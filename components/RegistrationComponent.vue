@@ -13,9 +13,12 @@
 </template>
 <script lang="ts" setup>
 import { useAuthStore } from '../store/authStore'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const store = useAuthStore()
 function clickSubmit() {
     store.registration(store.userForm, store.emailForm, store.passForm)
+    router.push('/')
 }
 </script>
 
