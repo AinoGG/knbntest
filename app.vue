@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <NuxtPage :loading="state.loading" />
+    <NuxtPage  />
   </div>
 </template>
 
@@ -15,8 +15,7 @@ console.log(store.isAuth)
 
 const state = reactive({
   expToken: 0,
-  isExpire: false,
-  loading: true
+  isExpire: false
 })
 
 function tokenExpired(token: any) {
@@ -34,16 +33,14 @@ if (process.browser && localStorage.getItem('token')) {
 }
 
 onMounted(() => {
-  boardStore.onIsShuffle()
+  
   if (process.browser && !state.isExpire && !!localStorage.getItem('refresh')) {
     store.refreshToken(localStorage.getItem('refresh'))
+    boardStore.onIsShuffle()
   }
   if (process.browser && !localStorage.getItem('refresh') && !localStorage.getItem('token')) {
     store.auth = false
   }
-
-  state.loading = false
-
 
 })
 </script>

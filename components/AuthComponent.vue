@@ -13,9 +13,13 @@
 <script lang="ts" setup>
 import { useAuthStore } from '../store/authStore'
 import { useRouter } from 'vue-router'
+import { useBoardStore } from '../store/boardStore'
 const router = useRouter()
 const store = useAuthStore()
+const boardStore = useBoardStore()
+
 function clickSubmit() {
+    boardStore.loading = true
     store.login(store.userForm, store.passForm)
     setTimeout(() => {
         router.push('/')

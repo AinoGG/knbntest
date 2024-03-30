@@ -7,6 +7,7 @@ interface BoardArray<T> {
     board: T[],
     textArea: string,
     dragObject: any,
+    loading: boolean
 }
 
 interface CardList {
@@ -31,6 +32,7 @@ interface Board<T> {
 export const useBoardStore = defineStore('board', {
     state: (): BoardArray<Board<CardList>> => {
         return {
+            loading: true,
             baseUrl: 'https://trello.backend.tests.nekidaem.ru/api/v1/',
             wssUrl: 'wss://trello.backend.tests.nekidaem.ru/events/?token=',
             expToken: 0,
@@ -86,6 +88,7 @@ export const useBoardStore = defineStore('board', {
             state.cardList.push(payload)
         },
         async getCards() {
+            this.loading = true
             await $fetch(`${this.baseUrl}cards/`, {
                 method: 'GET',
                 headers: {
@@ -102,11 +105,16 @@ export const useBoardStore = defineStore('board', {
                         this.board[resItem.row].cardList.push({ id: resItem.id, text: resItem.text, sec_num: resItem.sec_num })
                     }
                 })
+                this.loading = false
 
-
+            })
+            .catch(e => {
+                alert(e)
+                this.loading = false
             })
         },
         async createCard(row: number, text: string) {
+            this.loading = true
             await $fetch(`${this.baseUrl}cards/`, {
                 method: 'POST',
                 headers: {
@@ -119,16 +127,18 @@ export const useBoardStore = defineStore('board', {
                 }
             }).then((res: any) => {
                 this.board[row].cardList.push({ id: res.id, text: res.text, sec_num: res.sec_num })
+                this.loading = false
             })
         },
         async deleteCard(id: string) {
+            this.loading = true
             await $fetch(`${this.baseUrl}cards/${id}/`, {
                 method: "DELETE",
                 headers: {
                     'Content-type': 'application/json',
                     Authorization: `JWT ${localStorage.getItem('token')}`
                 },
-            }).then((res: any) => console.log(res))
+            }).then((res: any) => this.loading = false)
         },
         async updateCard(id: string, row: any, text: string) {
             await $fetch(`${this.baseUrl}cards/${id}/`, {
@@ -150,15 +160,17 @@ export const useBoardStore = defineStore('board', {
             })
         },
         async getIsShuffle() {
+            this.loading = true
             await $fetch(`${this.baseUrl}users/card_shuffle/`, {
                 method: "GET",
                 headers: {
                     'Content-type': 'application/json',
                     Authorization: `JWT ${localStorage.getItem('token')}`
                 },
-            }).then((res: any) => console.log(res))
+            }).then((res: any) => this.loading = false)
         },
         async onIsShuffle() {
+            this.loading = true
             await $fetch(`${this.baseUrl}users/card_shuffle/`, {
                 method: "POST",
                 headers: {
@@ -168,7 +180,7 @@ export const useBoardStore = defineStore('board', {
                 body: {
                     "is_shuffle_cards": true
                 }
-            }).then((res: any) => console.log(res))
+            }).then((res: any) => this.loading = false)
         },
         async webSocketFunc(id: any, oldRow: any, oldSeq: any, newRow: any, newSec: any, connection: any) {
 
